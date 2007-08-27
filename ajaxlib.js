@@ -51,6 +51,8 @@ if(typeof(AJAXLib) == 'undefined')
 	                
 	            }
 	            
+	            if(typeof (fnDone) != "function")
+	                fnDone = eval(fnDone);
 			var oRequest = this.connection();
 			
 			if (!oRequest) 
