@@ -192,7 +192,7 @@ function EntitiesConverter()
         new Array('&rsaquo;','&#8250;','›'),
         new Array('&bull;','&#8226;','•'),
         new Array('&hellip;','&#8230;','…'),
-        new Array('&prime;','&#8242;','''),
+        new Array('&prime;','&#8242;',"'"),
         new Array('&Prime;','&#8243;','?'),
         new Array('&oline;','&#8254;','?'),
         new Array('&frasl;','&#8260;','/'),
