@@ -11,7 +11,7 @@ if(typeof $ == 'undefined')
 
 if(typeof trim == 'undefined')
 {
-        
+
     function trim (string) {
             string = string.replace(/^s+/, '');
             for (var i = string.length; i > 0; i--) {
@@ -22,4 +22,23 @@ if(typeof trim == 'undefined')
             }
             return string;
     }
+}
+
+if(typeof addLoadEvent == 'undefined')
+{
+	function addLoadEvent(func){
+    var oldonload = window.onload;
+    if (typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }else{
+        window.onload = function(){
+            if (oldonload)
+            {
+                oldonload();
+            }
+            func();
+        }
+    }
+}
 }
