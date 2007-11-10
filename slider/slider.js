@@ -10,9 +10,6 @@
  *
  * per moure l'assumpte cal fer el següent:
  *
- * fer dos divs per a cada "barra" de percentatge
- * 		un fa de senyalador
- * 		l'altre fa la barra en si (de coloraines)
  *
  * el que detecta el moviment es el senyalador
  *
@@ -26,8 +23,9 @@
  *
  */
 
-function Slider()
+function Slider(nom)
 {
+	this.name=nom;
     this.rows = new Array();
     this.Value=0;
     this.Percent=1;
@@ -59,7 +57,7 @@ Slider.prototype.getRow=function(id)
 {
     var ret=null;
 
-    for(i=0;i<this.rows.length();i++)
+    for(i=0;i<this.rows.length;i++)
     {
         if(this.rows[i]['id']==id)
         {
@@ -91,22 +89,17 @@ Slider.prototype.moveElement=function()
 	if(!this.hasSelectedElement) return;
 }
 
-Slider.prototype.selectElement = function (el)
+Slider.prototype.selectElement = function (ef)
 {
-	var ef;
 	var index;
 
-	for(i=0;i<el.childNodes.length;i++)
+	if(typeof ef.id != 'undefined')
 	{
-		ef=el.childNodes[i];
-		if(typeof ef.id != 'undefined')
+		if(ef.id.indexOf("sliderSquare_")!=-1)
 		{
-			if(ef.id.indexOf("slideRow_")!=-1)
-			{
-				index=ef.id.split("slideRow_")[1];
-				this.hasSelectedElement=true;
-				this.selected=this.getRow(index);
-			}
+			index=ef.id.split("sliderSquare_")[1];
+			this.hasSelectedElement=true;
+			this.selected=this.getRow(index);
 		}
 	}
 }
@@ -115,10 +108,11 @@ Slider.prototype.drawSlider = function (plc)
 {
 	var dst=$(plc);
 
-	dst.className='sliderContent';
-
 	for(i=0;i<this.rows.length;i++)
 	{
-		alert(i);
+		var str = '<div class="sliderContent clearfix" id="sliderContent_'+this.rows[i]['id']+'">';
+		str += '<div class="sliderBar" id="sliderBar_'+this.rows[i]['id']+'">&nbsp;</div>';
+		str += '<div onmousedown="'+this.name+'.selectElement(this)" class="sliderSquare" id="sliderSquare_'+this.rows[i]['id']+'">&nbsp;</div></div>';
+		dst.innerHTML+=str;
 	}
 }

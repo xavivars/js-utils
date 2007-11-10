@@ -2,20 +2,31 @@ body {
 
 }
 
-sliderBar
+.sliderBar
 {
 	float:left;
+	background-color: #66CC66;
+	height: 40px;
+	width: 300px;
 }
 
-sliderSquare
+.sliderSquare
 {
-	clear:both;
+	float: left;
 	height: 40px;
 	width: 40px;
+	background-color: black;
 }
 
-sliderContent
+.sliderClear
+{
+	clear:both;
+	width:0px;
+}
+
+.sliderContent
 {
 	width: 340px;
 	height: 40px;
+	margin-bottom: 10px;
 }
