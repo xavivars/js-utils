@@ -1,5 +1,3 @@
-// Archivo JScript
-
 /**
  *
  * Slider basat en la pàgina
@@ -110,5 +108,17 @@ Slider.prototype.selectElement = function (el)
 				this.selected=this.getRow(index);
 			}
 		}
+	}
+}
+
+Slider.prototype.drawSlider = function (plc)
+{
+	var dst=$(plc);
+
+	dst.className='sliderContent';
+
+	for(i=0;i<this.rows.length;i++)
+	{
+		alert(i);
 	}
 }

@@ -1,0 +1,21 @@
+body {
+
+}
+
+sliderBar
+{
+	float:left;
+}
+
+sliderSquare
+{
+	clear:both;
+	height: 40px;
+	width: 40px;
+}
+
+sliderContent
+{
+	width: 340px;
+	height: 40px;
+}
