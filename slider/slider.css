@@ -2,12 +2,16 @@ body {
 
 }
 
+.slider{
+background-color: #FFCC66;
+padding: 20px;
+}
+
 .sliderBar
 {
 	float:left;
 	background-color: #66CC66;
 	height: 40px;
-	width: 300px;
 }
 
 .sliderSquare
