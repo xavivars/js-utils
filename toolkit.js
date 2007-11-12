@@ -8,6 +8,67 @@ if(typeof $ == 'undefined')
     }
 }
 
+if (typeof countWords == 'undefined') {
+
+	function countWords(str){
+		var r = 0;
+		a = str.replace(/\s/g, ' ');
+		a = a.split(' ');
+
+		for (z = 0; z < a.length; z++) {
+			if (a[z].length > 0)
+				r++;
+		}
+
+		return r;
+	}
+}
+
+if(typeof addEvent == 'undefined')
+{
+    function addEvent(obj, evType, fn, useCapture)
+	{
+        if (obj.addEventListener)
+		{
+            obj.addEventListener(evType, fn, useCapture);
+            return true;
+        }
+        else
+		{
+            if (obj.attachEvent)
+			{
+                var r = obj.attachEvent("on" + evType, fn);
+                return r;
+            }
+            else {
+                alert("Handler could not be attached");
+            }
+		}
+    }
+
+    function removeEvent(obj, evType, fn, useCapture)
+	{
+        if (obj.removeEventListener)
+		{
+            obj.removeEventListener(evType, fn, useCapture);
+            return true;
+        }
+        else
+		{
+            if (obj.detachEvent)
+			{
+                var r = obj.detachEvent("on" + evType, fn);
+                return r;
+            }
+            else
+			{
+                alert("Handler could not be removed");
+            }
+
+		}
+    }
+}
+
 
 if(typeof trim == 'undefined')
 {
