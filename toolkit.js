@@ -12,7 +12,7 @@ if (typeof countWords == 'undefined') {
 
 	function countWords(str){
 		var r = 0;
-		a = str.replace(/\s/g, ' ');
+		var a = str.replace(/\s/g, ' ');
 		a = a.split(' ');
 
 		for (z = 0; z < a.length; z++) {
