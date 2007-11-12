@@ -207,8 +207,9 @@ Slider.prototype.moveElement = function(event)
 	if(numtomodif==0)
 		return;
 
-	var mvd=sldr.moveBar(mv-sldr.cursorStart,tomodif);
 
+
+	var mvd=sldr.moveBar(mv-sldr.cursorStart,tomodif);
 	sldr.cursorStart+=mvd;
 
 	if(mvd!=0)
@@ -221,7 +222,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 		return 0;
 
 	var ret=px;
-	var bar = $('sliderBar_'+this.name+'_'+this.selectedIndex);
+
 
 	var newval = this.selected['value'];
 	var oldval = newval;
@@ -230,7 +231,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 	if(newval<0 || newval>100)
 		return false;
 
-	newval += (px);
+	newval += (px/3);
 
 	if(newval<0)
 	{
@@ -264,16 +265,68 @@ Slider.prototype.moveOtherElements = function()
 			this.selectedIndex != i))
 		{
 			tomodif.push(i);
-			accum = this.rows[i]['value'];
+			accum += this.rows[i]['value'];
 		}
 	}
 
 	if(accum==0)
 		return;
 
+
 	var delta = 100 - accum;
+	var propi = this.selected['value'];
+	var toadd = (100 - (propi+accum));
+	toadd=Math.round(toadd*100)/100;
+	var suma = (toadd>0);
+	var numtomodif=tomodif.length;
+	while(Math.abs(toadd)>0)
+	{
+		var toaddpart = toadd / numtomodif;
 
+		numtomodif = tomodif.length;
 
+		for(var i=0;i<tomodif.length;i++)
+		{
+			if(suma)
+			{
+				if ((this.rows[tomodif[i]]['value']) <= (100 - toaddpart)) {
+					this.rows[tomodif[i]]['value'] += toaddpart;
+					this.rows[tomodif[i]]['value']=Math.round(this.rows[tomodif[i]]['value']*100)/100;
+					toadd-=toaddpart;
+				}
+				else
+					numtomodif--;
+			}
+			else
+			{
+				if((this.rows[tomodif[i]]['value'])>=toaddpart) {
+					toadd-=toaddpart;
+					this.rows[tomodif[i]]['value']-=toaddpart;
+					this.rows[tomodif[i]]['value']=Math.round(this.rows[tomodif[i]]['value']*100)/100;
+				}
+				else
+					numtomodif--;
+			}
+		}
+		toadd=Math.round(toadd*100)/100;
+	}
+
+	this.redraw();
+}
+
+Slider.prototype.redraw = function()
+{
+	for(var i = 0;i<this.rows.length;i++)
+	{
+		if((this.rows[i]['display']) && (this.rows[i]['locked']==false))
+		{
+			var nom = "sliderBar_"+this.name+'_'+this.rows[i]['id'];
+			var el=$(nom);
+			if(typeof el != 'undefined')
+				el.style.width = this.rows[i]['value']*3;
+		}
+
+	}
 }
 
 Slider.prototype.endElement = function(aEvent)
@@ -293,9 +346,9 @@ Slider.prototype.clean = function()
 	removeEvent(document,"mousemove",this.moveElement,false);
 	removeEvent(document,"mouseup",this.endElement,false);
 
-	this.selected=null;
+/*	this.selected=null;
 	this.selectedDomElement=null;
-	this.hasSelectedElement=false;
+	this.hasSelectedElement=false; */
 }
 
 Slider.prototype.drawSlider = function(plc){
