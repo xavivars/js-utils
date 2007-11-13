@@ -251,14 +251,14 @@ Slider.prototype.moveBar = function(px,maxInc)
 
 	newval += this.getWeight(px);
 
-	if(newval<0)
+	if((px<0)&&(newval<0))
 	{
 		ret=newval-px;
 		ret=-ret;
 		newval=0;
 	}
 
-	if (newval > maxval)
+	if ((px>0)&&(newval > maxval))
 	{
 		ret = (newval-maxval) - px;
 		ret = -ret;
@@ -274,7 +274,7 @@ Slider.prototype.moveOtherElements = function()
 {
 	var accum = 0;
 	var tomodif = new Array();
-	var delta;
+	var delta = 0;
 
 	for(i=0;i<this.rows.length;i++)
 	{
@@ -285,15 +285,22 @@ Slider.prototype.moveOtherElements = function()
 			tomodif.push(i);
 			accum += this.rows[i]['value'];
 		}
+		else
+		{
+			if((this.rows[i]['display']== true)&&(this.rows[i]['locked']==true))
+			{
+				delta += this.rows[i]['value'];
+			}
+		}
 	}
 
 	if(accum==0)
 		return;
 
 
-	var delta = 100 - accum;
 	var propi = this.selected['value'];
-	var toadd = (100 - (propi+accum));
+	var disponible = 100 - delta;
+	var toadd = (disponible - (propi+accum));
 	toadd=Math.round(toadd*100)/100;
 	var suma = (toadd>0);
 	var numtomodif=tomodif.length;
