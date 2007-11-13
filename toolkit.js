@@ -85,21 +85,54 @@ if(typeof trim == 'undefined')
     }
 }
 
-if(typeof addLoadEvent == 'undefined')
+
+if (typeof addLoadEvent == 'undefined')
 {
-	function addLoadEvent(func){
-    var oldonload = window.onload;
-    if (typeof window.onload != 'function')
-    {
-        window.onload = func;
-    }else{
-        window.onload = function(){
-            if (oldonload)
-            {
-                oldonload();
+    function addLoadEvent(func)
+	{
+        var oldonload = window.onload;
+        if (typeof window.onload != 'function')
+		{
+            window.onload = func;
+        }
+        else
+		{
+            window.onload = function()
+			{
+                if (oldonload)
+				{
+                    oldonload();
+                }
+                func();
             }
-            func();
         }
     }
 }
+
+
+if (typeof getStyle == 'undefined')
+{
+    function getStyle(x, styleProp)
+	{
+        if (window.getComputedStyle) //Netscape
+            var y = window.getComputedStyle(x, null).getPropertyValue(styleProp);
+        else
+            if (x.currentStyle) //IE
+                var y = eval('x.currentStyle.' + styleProp);
+
+        return y;
+    }
+
 }
+
+if (typeof setStyle == 'undefined')
+{
+    function setStyle(x, styleProp,value)
+	{
+        x.style[styleProp] = value;
+    }
+}
+
+
+
+
