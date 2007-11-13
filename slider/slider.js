@@ -21,6 +21,7 @@
  *
  *
  */
+
 function Slider(nom){
     this.name = nom;
     this.rows = new Array();
@@ -68,6 +69,26 @@ Slider.prototype.getRow = function(id){
     }
 
     return ret;
+}
+
+Slider.prototype.lock = function (id)
+{
+	var	el = $('sliderImage_'+this.name+'_'+id);
+
+	if(typeof el == 'undefined')
+		return;
+
+	if(this.isLockedRow(id))
+	{
+		this.unlockRow(id);
+		el.src = 'unlocked.jpg';
+	}
+	else
+	{
+		this.lockRow(id);
+		el.src = 'locked.jpg';
+	}
+
 }
 
 Slider.prototype.unlockRow = function(id){
@@ -149,7 +170,6 @@ Slider.prototype.selectElement = function(aEvent){
 	}
 
     sldr.evitaEventos(myEvent);
-	window.status='valors: ';
 }
 
 
@@ -207,8 +227,6 @@ Slider.prototype.moveElement = function(event)
 	if(numtomodif==0)
 		return;
 
-
-
 	var mvd=sldr.moveBar(mv-sldr.cursorStart,tomodif);
 	sldr.cursorStart+=mvd;
 
@@ -231,7 +249,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 	if(newval<0 || newval>100)
 		return false;
 
-	newval += (px/3);
+	newval += this.getWeight(px);
 
 	if(newval<0)
 	{
@@ -247,7 +265,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 		newval = maxval;
 	}
 
-	this.selected['value']=Math.round(100*newval)/100;
+	this.selected['value']=newval;
 
 	return ret;
 }
@@ -299,9 +317,9 @@ Slider.prototype.moveOtherElements = function()
 			}
 			else
 			{
-				if((this.rows[tomodif[i]]['value'])>=toaddpart) {
+				if((this.rows[tomodif[i]]['value'])>=(0-toaddpart)) {
 					toadd-=toaddpart;
-					this.rows[tomodif[i]]['value']-=toaddpart;
+					this.rows[tomodif[i]]['value']+=toaddpart;
 					this.rows[tomodif[i]]['value']=Math.round(this.rows[tomodif[i]]['value']*100)/100;
 				}
 				else
@@ -323,7 +341,7 @@ Slider.prototype.redraw = function()
 			var nom = "sliderBar_"+this.name+'_'+this.rows[i]['id'];
 			var el=$(nom);
 			if(typeof el != 'undefined')
-				el.style.width = this.rows[i]['value']*3;
+				el.style.width = this.getWidth(this.rows[i]['value'])+'px';
 		}
 
 	}
@@ -346,12 +364,16 @@ Slider.prototype.clean = function()
 	removeEvent(document,"mousemove",this.moveElement,false);
 	removeEvent(document,"mouseup",this.endElement,false);
 
-/*	this.selected=null;
+	this.selected=null;
 	this.selectedDomElement=null;
-	this.hasSelectedElement=false; */
+	this.hasSelectedElement=false;
 }
 
 Slider.prototype.drawSlider = function(plc){
+
+	if(this.rows.length<=0)
+		return;
+
     var dst = $(plc);
 
     if (navigator.userAgent.indexOf("MSIE") >= 0)
@@ -360,11 +382,66 @@ Slider.prototype.drawSlider = function(plc){
     for (i = 0; i < this.rows.length; i++) {
         var str = '';
 		str += '<div class="sliderContent clearfix" id="sliderContent_' + this.name + '_' + this.rows[i]['id'] + '">';
-        str += '<div class="sliderBar" style="width: '+ Math.round(this.rows[i]['value']*3)+'px;" id="sliderBar_' + this.name + '_' + this.rows[i]['id'] + '"></div>';
+		str += '<div class="sliderImg" id="sliderImageDiv_'+ this.name + '_' + this.rows[i]['id'] +'">'
+		str += '<div id="sliderHolder_'+ this.name + '_' + this.rows[i]['id'] +'" class="holder"><span id="edge"></span><span id="container">';
+		str += '<img onclick="'+this.name+'.lock(\''+this.rows[i]['id']+'\')" id="sliderImage_' + this.name + '_' + this.rows[i]['id'] + '" src="unlocked.jpg" />'
+		str += '</span></div></div>';
+        str += '<div class="sliderBar" id="sliderBar_' + this.name + '_' + this.rows[i]['id'] + '"></div>';
         str += '<div class="sliderSquare" id="sliderSquare_' + this.name + '_' + this.rows[i]['id'] + '">&nbsp;</div></div>';
         dst.innerHTML += str;
     }
 
+	this.setDivSizes();
+	this.redraw();
+
 	document.sliderActive = this;
 	addEvent(document,"mousedown",this.selectElement,false);
+}
+
+Slider.prototype.save = function()
+{
+	for(var i=0;i<this.rows.length;i++)
+		this.rows[i]['savedValue']=this.rows[i]['value'];
+}
+
+Slider.prototype.setDivSizes = function()
+{
+	if(this.rows.length>0)
+	{
+		var el=$('sliderContent_'+this.name+'_'+this.rows[0]['id']);
+
+		// square size
+		var hg = getStyle(el,'height');
+		var wd = getStyle(el,'width');
+
+		for(var i=0;i<this.rows.length;i++)
+		{
+			var sqdiv=$('sliderSquare_'+this.name+'_'+this.rows[i]['id']);
+			var bardiv=$('sliderBar_'+this.name+'_'+this.rows[i]['id']);
+			var imgholder=$('sliderHolder_'+this.name+'_'+this.rows[i]['id']);
+			var imgdiv=$('sliderImageDiv_'+this.name+'_'+this.rows[i]['id']);
+			setStyle(sqdiv,'height',hg);
+			setStyle(bardiv,'height',hg);
+			setStyle(imgdiv,'height',hg);
+			setStyle(imgholder,'height',hg);
+			setStyle(sqdiv,'width',hg);
+		}
+
+		this.setMaxBarWidth(parseInt(wd)-parseInt(hg));
+	}
+}
+
+Slider.prototype.setMaxBarWidth = function (px)
+{
+	this.maxBarWidth = (px / 100);
+}
+
+Slider.prototype.getWidth = function (wg)
+{
+	return Math.round(wg * this.maxBarWidth);
+}
+
+Slider.prototype.getWeight = function (px)
+{
+	return Math.round((px / this.maxBarWidth)*100)/100;
 }

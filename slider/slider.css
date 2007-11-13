@@ -11,14 +11,11 @@ padding: 20px;
 {
 	float:left;
 	background-color: #66CC66;
-	height: 40px;
 }
 
 .sliderSquare
 {
 	float: left;
-	height: 40px;
-	width: 40px;
 	background-color: black;
 }
 
@@ -30,7 +27,37 @@ padding: 20px;
 
 .sliderContent
 {
-	width: 340px;
-	height: 40px;
+	width: 220px;
+	height: 20px;
 	margin-bottom: 10px;
 }
+
+.sliderImg{
+	float:left;
+	width: 20px;
+	padding-left: 20px;
+}
+
+div.holder{
+display: table-cell;
+width: 20px;
+text-align: center;
+vertical-align: middle;
+}
+
+div.holder img { margin: 0 auto;}
+
+* html #edge {
+display: inline-block;
+width: 0;
+height: 100%;
+vertical-align: middle;
+}
+
+* html #container {
+display: inline-block;
+width: 100%;
+text-align: center;
+vertical-align: middle;
+}
+
