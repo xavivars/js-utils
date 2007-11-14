@@ -38,7 +38,8 @@ function Slider(nom){
     this.Browser = this.Mozilla;
 	this.cursorStart=0;
 	this.squareStart=0;
-
+	this.writeDescs = false;
+	this.imgPath='';
 
 }
 
@@ -81,12 +82,12 @@ Slider.prototype.lock = function (id)
 	if(this.isLockedRow(id))
 	{
 		this.unlockRow(id);
-		el.src = 'unlocked.jpg';
+		el.src = this.imgPath+'unlocked.jpg';
 	}
 	else
 	{
 		this.lockRow(id);
-		el.src = 'locked.jpg';
+		el.src = this.imgPath+'locked.jpg';
 	}
 
 }
@@ -385,10 +386,15 @@ Slider.prototype.clean = function()
 	this.hasSelectedElement=false;
 }
 
-Slider.prototype.drawSlider = function(plc){
+Slider.prototype.drawSlider = function(plc,descs){
 
 	if(this.rows.length<=0)
 		return;
+
+	if(typeof descs == 'boolean')
+		this.writeDescs = descs;
+	else
+		this.writeDescs = false;
 
     var dst = $(plc);
 
@@ -397,11 +403,15 @@ Slider.prototype.drawSlider = function(plc){
 
     for (i = 0; i < this.rows.length; i++) {
         var str = '';
+		if(this.writeDescs)
+		{
+			str += '<div class="sliderDescs">'+this.rows[i]['name']+'</div>';
+		}
 		str += '<div class="sliderContent clearfix" id="sliderContent_' + this.name + '_' + this.rows[i]['id'] + '">';
 		str += '<div class="sliderValue" id="sliderValue_'+ this.name + '_' + this.rows[i]['id'] +'" ></div>'
 		str += '<div class="sliderImg" id="sliderImageDiv_'+ this.name + '_' + this.rows[i]['id'] +'">'
 		str += '<div id="sliderHolder_'+ this.name + '_' + this.rows[i]['id'] +'" class="holder"><span id="edge"></span><span id="container">';
-		str += '<img onclick="'+this.name+'.lock(\''+this.rows[i]['id']+'\')" id="sliderImage_' + this.name + '_' + this.rows[i]['id'] + '" src="unlocked.jpg" />'
+		str += '<img onclick="'+this.name+'.lock(\''+this.rows[i]['id']+'\')" id="sliderImage_' + this.name + '_' + this.rows[i]['id'] + '" src="'+this.imgPath+'unlocked.jpg" />'
 		str += '</span></div></div>';
         str += '<div class="sliderBar" id="sliderBar_' + this.name + '_' + this.rows[i]['id'] + '"></div>';
         str += '<div class="sliderSquare" id="sliderSquare_' + this.name + '_' + this.rows[i]['id'] + '">&nbsp;</div></div>';
@@ -473,4 +483,9 @@ Slider.prototype.getWidth = function (wg)
 Slider.prototype.getWeight = function (px)
 {
 	return Math.round((px / this.maxBarWidth)*100)/100;
+}
+
+Slider.prototype.setImagePath = function (pt)
+{
+	this.imgPath = pt;
 }
