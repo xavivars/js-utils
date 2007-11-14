@@ -273,8 +273,27 @@ if (typeof sprintf == 'undefined')
 
 	sprintf = sprintfWrapper.init;
 
-
-
 }
 
+if(typeof noEvents == 'undefined')
+{
+	function preventEvents(event,br,iex,mz)
+	{
+	    if (br == iex) {
+	        window.event.cancelBubble = true;
+	        window.event.returnValue = false;
+    	}
+	    else
+		{
+	        event.preventDefault();
+    	}
+	}
+}
 
+if(typeof getEvent == 'undefined')
+{
+	function getEvent(aEvent)
+	{
+		return window.event ? window.event : aEvent;
+	}
+}
