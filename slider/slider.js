@@ -103,21 +103,11 @@ Slider.prototype.isLockedRow = function(id){
     return (this.getRow(id))['locked'];
 }
 
-Slider.prototype.getEvent = function(aEvent)
-{
-	return window.event ? window.event : aEvent;
-}
-
 Slider.prototype.selectElement = function(aEvent){
-
-	var sldr = document.sliderActive;
-
-	if((typeof sldr == 'undefined'))
-		return;
 
     var index;
 
-	var myEvent = sldr.getEvent(aEvent);
+	var myEvent = getEvent(aEvent);
 
 	var srcElem;
 
@@ -126,10 +116,27 @@ Slider.prototype.selectElement = function(aEvent){
 	else
 		srcElem = myEvent.target;
 
+	var sldrContent = srcElem;
+
+    while (sldrContent.id.indexOf("sliderContent_") == -1)
+    {
+        sldrContent = sldrContent.parentNode;
+        if (sldrContent == null) { return }
+    }
+
+	sldrIndex = sldrContent.parentNode.id;
+	document.sliderActive = document.sliders[sldrIndex];
+	sldr = document.sliderActive
+
+	if((typeof sldr == 'undefined'))
+		return;
+
+
     while (srcElem.id.indexOf("sliderSquare_") == -1)
     {
-        srcElem = srcElem.parentElement;
-        if (srcElem == null) { return }
+        srcElem = srcElem.parentNode;
+        if ((srcElem == null)||(typeof srcElem.id == 'undefined'))
+		{ return }
     }
 
 	var ef=srcElem;
@@ -169,20 +176,9 @@ Slider.prototype.selectElement = function(aEvent){
 		addEvent(document,"mouseup",sldr.endElement,false);
 	}
 
-    sldr.evitaEventos(myEvent);
+    preventEvents(myEvent,sldr.Browser,sldr.IExplorer,sldr.Mozilla);
 }
 
-
-Slider.prototype.evitaEventos = function(event)
-{
-    if (this.Browser == this.IExplorer) {
-        window.event.cancelBubble = true;
-        window.event.returnValue = false;
-    }
-    else {
-        event.preventDefault();
-    }
-}
 
 Slider.prototype.moveElement = function(event)
 {
@@ -195,7 +191,7 @@ Slider.prototype.moveElement = function(event)
 
 
 
-	var myEvent = sldr.getEvent(event);
+	var myEvent = getEvent(event);
 
 	if(sldr.Browser == sldr.IExplorer)
 	{
@@ -231,7 +227,11 @@ Slider.prototype.moveElement = function(event)
 	sldr.cursorStart+=mvd;
 
 	if(mvd!=0)
+	{
 		sldr.moveOtherElements();
+		sldr.redraw();
+	}
+
 }
 
 Slider.prototype.moveBar = function(px,maxInc)
@@ -253,7 +253,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 
 	if((px<0)&&(newval<0))
 	{
-		ret=newval-px;
+		ret=this.getWidth(newval)-px;
 		ret=-ret;
 		newval=0;
 	}
@@ -294,10 +294,6 @@ Slider.prototype.moveOtherElements = function()
 		}
 	}
 
-	if(accum==0)
-		return;
-
-
 	var propi = this.selected['value'];
 	var disponible = 100 - delta;
 	var toadd = (disponible - (propi+accum));
@@ -306,6 +302,9 @@ Slider.prototype.moveOtherElements = function()
 	var numtomodif=tomodif.length;
 	while(Math.abs(toadd)>0)
 	{
+		if(numtomodif==0)
+			break;
+
 		var toaddpart = toadd / numtomodif;
 
 		numtomodif = tomodif.length;
@@ -335,8 +334,6 @@ Slider.prototype.moveOtherElements = function()
 		}
 		toadd=Math.round(toadd*100)/100;
 	}
-
-	this.redraw();
 }
 
 Slider.prototype.redraw = function()
@@ -347,8 +344,18 @@ Slider.prototype.redraw = function()
 		{
 			var nom = "sliderBar_"+this.name+'_'+this.rows[i]['id'];
 			var el=$(nom);
+
 			if(typeof el != 'undefined')
+			{
+				var valor = "sliderValue_"+this.name+'_'+this.rows[i]['id'];
+				var vl=$(valor);
+
 				el.style.width = this.getWidth(this.rows[i]['value'])+'px';
+
+				vl.innerHTML = (Math.round(this.rows[i]['value']*10)/10) + '%';
+
+			}
+
 		}
 
 	}
@@ -361,9 +368,11 @@ Slider.prototype.endElement = function(aEvent)
 	if((typeof sldr == 'undefined') || (sldr.hasSelectedElement == false))
 		return;
 
-	var myEvent = sldr.getEvent(aEvent);
+	var myEvent = getEvent(aEvent);
 
 	sldr.clean();
+
+	document.sliderActive = null;
 }
 
 Slider.prototype.clean = function()
@@ -389,6 +398,7 @@ Slider.prototype.drawSlider = function(plc){
     for (i = 0; i < this.rows.length; i++) {
         var str = '';
 		str += '<div class="sliderContent clearfix" id="sliderContent_' + this.name + '_' + this.rows[i]['id'] + '">';
+		str += '<div class="sliderValue" id="sliderValue_'+ this.name + '_' + this.rows[i]['id'] +'" ></div>'
 		str += '<div class="sliderImg" id="sliderImageDiv_'+ this.name + '_' + this.rows[i]['id'] +'">'
 		str += '<div id="sliderHolder_'+ this.name + '_' + this.rows[i]['id'] +'" class="holder"><span id="edge"></span><span id="container">';
 		str += '<img onclick="'+this.name+'.lock(\''+this.rows[i]['id']+'\')" id="sliderImage_' + this.name + '_' + this.rows[i]['id'] + '" src="unlocked.jpg" />'
@@ -401,8 +411,9 @@ Slider.prototype.drawSlider = function(plc){
 	this.setDivSizes();
 	this.redraw();
 
-	document.sliderActive = this;
-	addEvent(document,"mousedown",this.selectElement,false);
+	document.sliders = Array();
+	document.sliders[plc]=this;
+	addEvent(dst,"mousedown",this.selectElement,false);
 }
 
 Slider.prototype.save = function()
@@ -420,6 +431,7 @@ Slider.prototype.setDivSizes = function()
 		// square size
 		var hg = getStyle(el,'height');
 		var wd = getStyle(el,'width');
+		var mximw = 0;
 
 		for(var i=0;i<this.rows.length;i++)
 		{
@@ -427,6 +439,7 @@ Slider.prototype.setDivSizes = function()
 			var bardiv=$('sliderBar_'+this.name+'_'+this.rows[i]['id']);
 			var imgholder=$('sliderHolder_'+this.name+'_'+this.rows[i]['id']);
 			var imgdiv=$('sliderImageDiv_'+this.name+'_'+this.rows[i]['id']);
+
 			setStyle(sqdiv,'height',hg);
 			setStyle(bardiv,'height',hg);
 			setStyle(imgdiv,'height',hg);
@@ -434,7 +447,16 @@ Slider.prototype.setDivSizes = function()
 			setStyle(sqdiv,'width',hg);
 		}
 
-		this.setMaxBarWidth(parseInt(wd)-parseInt(hg));
+		var imgdiv=$('sliderImageDiv_'+this.name+'_'+this.rows[0]['id']);
+		var vldiv=$('sliderValue_'+this.name+'_'+this.rows[0]['id']);
+
+		mximw += parseInt(getStyle(imgdiv,'padding-right'));
+		mximw += parseInt(getStyle(imgdiv,'width'));
+		mximw += parseInt(getStyle(vldiv,'width'));
+
+
+
+		this.setMaxBarWidth(parseInt(wd)-mximw-parseInt(hg));
 	}
 }
 
