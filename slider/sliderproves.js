@@ -9,7 +9,7 @@ slid.addRow(3,'Fila 3',true,66.67,Slider.percent,false);
 
 function sliderInit()
 {
-	slid.drawSlider('slider');
+	slid.drawSlider('slider',true);
 }
 
 addLoadEvent(sliderInit);
