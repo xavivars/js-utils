@@ -122,7 +122,7 @@ Slider.prototype.selectElement = function(aEvent){
     while (sldrContent.id.indexOf("sliderContent_") == -1)
     {
         sldrContent = sldrContent.parentNode;
-        if ((sldrContent == null)||(typeof srcElem.id != 'string'))
+        if ((sldrContent == null)||(typeof sldrContent.id != 'string'))
 		{ return }
     }
 
@@ -248,6 +248,9 @@ Slider.prototype.moveBar = function(px,maxInc)
 	var oldval = newval;
 	var maxval = oldval + maxInc;
 
+	if(maxval>100)
+		maxval=100;
+
 	if(newval<0 || newval>100)
 		return false;
 
@@ -267,7 +270,7 @@ Slider.prototype.moveBar = function(px,maxInc)
 		newval = maxval;
 	}
 
-	this.selected['value']=newval;
+	this.selected['value']=(Math.round(newval*100))/100;
 
 	return ret;
 }
