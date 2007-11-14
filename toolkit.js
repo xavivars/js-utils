@@ -122,11 +122,19 @@ if (typeof getStyle == 'undefined')
 {
     function getStyle(x, styleProp)
 	{
-        if (window.getComputedStyle) //Netscape
-            var y = window.getComputedStyle(x, null).getPropertyValue(styleProp);
+		var y;
+        if (window.getComputedStyle)
+		{
+			y = window.getComputedStyle(x, null).getPropertyValue(styleProp);
+		} //Netscape
         else
-            if (x.currentStyle) //IE
-                var y = eval('x.currentStyle.' + styleProp);
+		{
+			if (x.currentStyle) //IE
+			{
+				y = eval('x.currentStyle.' + styleProp.camelize());
+			}
+		}
+
 
         return y;
     }
@@ -138,6 +146,23 @@ if (typeof setStyle == 'undefined')
     function setStyle(x, styleProp,value)
 	{
         x.style[styleProp] = value;
+    }
+}
+
+if(typeof String.prototype.camelize == 'undefined')
+{
+    String.prototype.camelize = function()
+	{
+        var parts = this.split('-'), len = parts.length;
+        if (len == 1)
+            return parts[0];
+
+        var camelized = this.charAt(0) == '-' ? parts[0].charAt(0).toUpperCase() + parts[0].substring(1) : parts[0];
+
+        for (var i = 1; i < len; i++)
+            camelized += parts[i].charAt(0).toUpperCase() + parts[i].substring(1);
+
+        return camelized;
     }
 }
 
