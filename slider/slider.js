@@ -122,7 +122,8 @@ Slider.prototype.selectElement = function(aEvent){
     while (sldrContent.id.indexOf("sliderContent_") == -1)
     {
         sldrContent = sldrContent.parentNode;
-        if (sldrContent == null) { return }
+        if ((sldrContent == null)||(typeof srcElem.id != 'string'))
+		{ return }
     }
 
 	sldrIndex = sldrContent.parentNode.id;
@@ -136,7 +137,7 @@ Slider.prototype.selectElement = function(aEvent){
     while (srcElem.id.indexOf("sliderSquare_") == -1)
     {
         srcElem = srcElem.parentNode;
-        if ((srcElem == null)||(typeof srcElem.id == 'undefined'))
+        if ((srcElem == null)||(typeof srcElem.id != 'string'))
 		{ return }
     }
 
@@ -423,7 +424,7 @@ Slider.prototype.drawSlider = function(plc,descs){
 
 	document.sliders = Array();
 	document.sliders[plc]=this;
-	addEvent(dst,"mousedown",this.selectElement,false);
+	addEvent(document,"mousedown",this.selectElement,false);
 }
 
 Slider.prototype.save = function()
