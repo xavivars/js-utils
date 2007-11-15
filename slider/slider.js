@@ -5,28 +5,11 @@
  * http://www.eggheadcafe.com/articles/20020922.asp
  *
  */
-/*
- *
- * per moure l'assumpte cal fer el següent:
- *
- *
- * el que detecta el moviment es el senyalador
- *
- * coloraines creix a mesura que el senyalador es mou,
- * desplaçant per tant al senyalador cap a la dreta
- *
- * s'hauria de fer un capturador d'event al senyalador
- * per tal de rebre l'event de manera adequada
- *
- *
- *
- */
 
-function Slider(nom){
+function Slider(nom,tp){
     this.name = nom;
     this.rows = new Array();
-    this.Value = 0;
-    this.Percent = 1;
+
     this.hasSelectedElement = false;
     this.selected = null;
 	this.selectedDomElement = null;
@@ -40,16 +23,29 @@ function Slider(nom){
 	this.squareStart=0;
 	this.writeDescs = false;
 	this.imgPath='';
+	this.maxValue = 100;
+
+	if(typeof tp == 'undefined')
+		this.tipus = Slider.Percent;
+	else
+		this.tipus=tp;
+
+	this.bgcolor = '#66A0CF';
 
 }
 
-Slider.prototype.addRow = function(id, name, display, value, type, locked){
+Slider.prototype.Value = 0;
+Slider.prototype.Percent = 1;
+Slider.Value = 0;
+Slider.Percent = 1;
+
+Slider.prototype.addRow = function(id, name, display, value, locked){
     var nr = {
         'id': id,
         'name': name,
         'display': display,
         'value': value,
-        'type': type,
+        'type': this.tipus,
         'locked': locked,
         'savedValue': value
     }
@@ -222,15 +218,23 @@ Slider.prototype.moveElement = function(event)
 		}
 	}
 
-	if(numtomodif==0)
-		return;
+	if (sldr.tipus == sldr.Percent) {
+		if (numtomodif == 0)
+			return;
+	}
 
 	var mvd=sldr.moveBar(mv-sldr.cursorStart,tomodif);
+
 	sldr.cursorStart+=mvd;
 
-	if(mvd!=0)
+	if (sldr.tipus == sldr.Percent) {
+		if (mvd != 0) {
+			sldr.moveOtherElements();
+			sldr.redraw();
+		}
+	}
+	else
 	{
-		sldr.moveOtherElements();
 		sldr.redraw();
 	}
 
@@ -249,7 +253,10 @@ Slider.prototype.moveBar = function(px,maxInc)
 	var maxval = oldval + maxInc;
 
 	if(maxval>100)
-		maxval=100;
+		maxval = 100;
+
+	if(this.tipus == this.Value)
+		maxval = 100;
 
 	if(newval<0 || newval>100)
 		return false;
@@ -341,6 +348,38 @@ Slider.prototype.moveOtherElements = function()
 	}
 }
 
+Slider.prototype.getColor = function (vl)
+{
+	var middle = (this.maxValue/2);
+	var col = '#';
+	var R = '';
+	var G = '';
+	var B = '00';
+
+	if(vl < middle)
+	{
+		R = 'E1';
+
+		var ng = Math.round(225 * ( vl / middle));
+
+		G = '' + Hex.toHex(ng);
+	}
+	else
+	{
+		var ng = 225 - Math.round(225 * ( (vl-50) / this.maxValue));
+
+		R = '' + Hex.toHex(ng);
+
+
+		G = 'E1';
+
+	}
+
+	col += ''+R+G+B;
+
+	return col;
+}
+
 Slider.prototype.redraw = function()
 {
 	for(var i = 0;i<this.rows.length;i++)
@@ -357,12 +396,21 @@ Slider.prototype.redraw = function()
 
 				el.style.width = this.getWidth(this.rows[i]['value'])+'px';
 
-				vl.innerHTML = (Math.round(this.rows[i]['value']*10)/10) + '%';
+				if(this.changeColor)
+					el.style['backgroundColor']=this.getColor(this.rows[i]['value']);
+				else
+					el.style['backgroundColor']=this.bgcolor;
 
+				if(this.tipus == this.Percent)
+				{
+					vl.innerHTML = (Math.round(this.rows[i]['value']*10)/10) + '%';
+				}
+				else
+				{
+					vl.innerHTML = ''+(Math.round(this.rows[i]['value']*(this.maxValue/100)));
+				}
 			}
-
 		}
-
 	}
 }
 
@@ -425,7 +473,9 @@ Slider.prototype.drawSlider = function(plc,descs){
 	this.setDivSizes();
 	this.redraw();
 
-	document.sliders = Array();
+	if (typeof document.sliders == 'undefined')
+		document.sliders = Array();
+
 	document.sliders[plc]=this;
 	addEvent(document,"mousedown",this.selectElement,false);
 }
@@ -492,4 +542,34 @@ Slider.prototype.getWeight = function (px)
 Slider.prototype.setImagePath = function (pt)
 {
 	this.imgPath = pt;
+}
+
+Slider.prototype.setMaxValue = function (mx)
+{
+	this.maxValue = mx;
+}
+
+Slider.prototype.getMaxValue = function ()
+{
+	return this.maxValue;
+}
+
+Slider.prototype.setChangeColor = function (mx)
+{
+	this.changeColor = mx;
+}
+
+Slider.prototype.getChangeColor = function ()
+{
+	return this.changeColor;
+}
+
+Slider.prototype.setBackgroundColor = function (bc)
+{
+	this.bgcolor = bc;
+}
+
+Slider.prototype.getBackGroundColor = function ()
+{
+	return this.bgcolor;
 }
