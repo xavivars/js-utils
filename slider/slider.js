@@ -350,7 +350,7 @@ Slider.prototype.moveOtherElements = function()
 
 Slider.prototype.getColor = function (vl)
 {
-	var middle = (this.maxValue/2);
+	var middle = (50);
 	var col = '#';
 	var R = '';
 	var G = '';
@@ -366,7 +366,7 @@ Slider.prototype.getColor = function (vl)
 	}
 	else
 	{
-		var ng = 225 - Math.round(225 * ( (vl-50) / this.maxValue));
+		var ng = 225 - Math.round(225 * ( (vl-50) / 50));
 
 		R = '' + Hex.toHex(ng);
 
