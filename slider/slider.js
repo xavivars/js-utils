@@ -583,3 +583,8 @@ Slider.prototype.getValue = function (id)
 {
 	return (((this.getRow(id))['value'])*(this.maxValue/100));
 }
+
+Slider.prototype.getRoundedValue = function(id)
+{
+	return Math.round(this.getValue(id));
+}
