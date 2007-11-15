@@ -44,10 +44,10 @@ Slider.prototype.addRow = function(id, name, display, value, locked){
         'id': id,
         'name': name,
         'display': display,
-        'value': value,
+        'value': (value*(100/this.maxValue)),
         'type': this.tipus,
         'locked': locked,
-        'savedValue': value
+        'savedValue': (value*(100/this.maxValue))
     }
 
     this.rows.push(nr);
@@ -572,4 +572,14 @@ Slider.prototype.setBackgroundColor = function (bc)
 Slider.prototype.getBackGroundColor = function ()
 {
 	return this.bgcolor;
+}
+
+Slider.prototype.setValue = function(id,vl)
+{
+	((this.getRow(id))['value']=vl*(100/this.maxValue));
+}
+
+Slider.prototype.getValue = function (id)
+{
+	return (((this.getRow(id))['value'])*(this.maxValue/100));
 }

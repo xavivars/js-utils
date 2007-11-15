@@ -8,7 +8,7 @@ slid.addRow(3,'Fila 3',true,66.67,false);
 
 
 fixe = new Slider('fixe',Slider.Value);
-
+fixe.setMaxValue(200);
 fixe.addRow(1,'Prova',true,43,false);
 fixe.setChangeColor(true);
 
