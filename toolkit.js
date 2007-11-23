@@ -300,7 +300,7 @@ if (typeof sprintf == 'undefined')
 
 }
 
-if(typeof noEvents == 'undefined')
+if(typeof preventEvents == 'undefined')
 {
 	function preventEvents(event,br,iex,mz)
 	{
