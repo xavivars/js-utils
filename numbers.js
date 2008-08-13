@@ -48,7 +48,8 @@ if(typeof Numbers == 'undefined') {
 		a = parseInt(nm);
 		if(isNaN(a)) {
 			var	str = nm.toUpperCase(),
-			validator = /^M*(?:D?C{0,3}|C[MD])(?:L?X{0,3}|X[CL])(?:V?I{0,3}|I[XV])$/,
+			validator = /^M*(?:D?C{0,3}|C[MD])(?:L?X{0,3}|X[CL])(?:V?I{0,3}|I[XV])$/;
+
 			if(str && validator.test(str))
 				return toArabic(str);
 			else
