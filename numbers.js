@@ -33,7 +33,7 @@ if(typeof Numbers == 'undefined') {
 	}
 
 	function toArabic(nm) {
-		var roman = roman.toUpperCase().split(''),
+		var roman = nm.toUpperCase().split(''),
 		lookup = {I:1,V:5,X:10,L:50,C:100,D:500,M:1000},
 		num = 0, val = 0;
 	
